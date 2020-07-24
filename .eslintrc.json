@@ -1,0 +1,36 @@
+{
+  "env": {
+    "es2020": true
+  },
+  "extends": ["plugin:@typescript-eslint/recommended", "airbnb-base"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "camelcase": "off",
+    "no-unused-vars": "off",
+    "semi": ["warn", "never"],
+    "import/prefer-default-export": "warn",
+    "import/extensions": [
+      1,
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
+  },
+  "settings": {
+    "import/extensions": [".ts", ".tsx"],
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
