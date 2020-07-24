@@ -1,6 +1,5 @@
 {
   "name": "twitch-api",
-  "type": "module",
   "version": "1.0.0",
   "main": "src/index.ts",
   "repository": "https://github.com/Cauaspinheiro/twitch-api.git",
@@ -8,8 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "tsc && node build/index.js",
-    "dev": "ts-node-dev --ignore-watch node_modules src/index.ts"
+    "ct": "git-cz",
+    "start": "tsc && node build/index.js"
   },
   "devDependencies": {
     "@types/node-powershell": "^3.1.1",
@@ -20,10 +19,7 @@
     "eslint": "^7.3.1",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
-    "ts-jest": "^26.1.0",
     "ts-node": "^8.10.2",
-    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.9.7"
   },
   "config": {
@@ -32,6 +28,8 @@
     }
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
     "node-powershell": "^4.0.0",
     "open": "^7.1.0"
   }
