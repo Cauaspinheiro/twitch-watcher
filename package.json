@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "dotenv": "^8.2.0",
     "node-powershell": "^4.0.0",
+    "node-watch": "^0.6.4",
     "open": "^7.1.0"
   }
 }

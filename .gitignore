@@ -106,3 +106,7 @@ dist
 # ts build
 
 build
+
+# config file
+
+config.json
