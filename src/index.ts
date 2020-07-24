@@ -1,12 +1,11 @@
-import open from 'open'
-import Shell from 'node-powershell'
+import { config } from 'dotenv'
+import api from './services/axios'
 
-const promise = open('https://www.twitch.tv/tixinhadois')
+config()
 
-const ps = new Shell({})
-
-const promise2 = ps.addCommand('taskkill /IM chrome.exe /F')
-
-const promise3 = ps.invoke().catch(() => null)
-
-Promise.all([promise, promise2, promise3]).then(() => process.exit(0))
+api.get('/streams?game_id=33214', {
+  headers: {
+    'Client-ID': process.env.TWITCH_ID,
+    authorization: `Bearer ${process.env.TWITCH_SECRET}`,
+  },
+}).then(({ data }) => { console.log(data) }).catch((error) => console.log(error))
