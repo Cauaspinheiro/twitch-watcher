@@ -1,25 +1,32 @@
 import Powershell from 'node-powershell'
+import faker from 'faker'
+import open from 'open'
 import { Config, StreamerReq } from './types'
 import api from './services/axios'
 
-export default function fn(json: Config) : void {
-  const ps = new Powershell({})
+export default function fn(json: Config) : () => Promise<void> {
+  const id = faker.random.alphaNumeric(4)
 
   const streamersOpens : string[] = []
 
-  async function openArray(streamers: string[]) {
+  const ps = new Powershell({})
+
+  async function openArray(streamers : string[]) {
+    console.log(`${id} has ${streamers}`)
+
     streamers.forEach(async (streamer) => {
       if (!streamersOpens.includes(streamer)) {
-        await ps.addCommand(`start msedge https://www.twitch.tv/${streamer}`)
+        await open(`https://www.twitch.tv/${streamer}`)
         streamersOpens.push(streamer)
+        console.log(`${id} opening ${streamer}`)
       }
     })
-
-    await ps.invoke()
   }
 
   async function request() {
     const query = `user_login=${json.streamers.join('&user_login=')}`
+
+    console.log(`${id} requesting api`)
 
     const { data: res } = await api.get<StreamerReq>(`/streams?${query}`, {
       headers: {
@@ -41,5 +48,15 @@ export default function fn(json: Config) : void {
 
   request()
 
-  setInterval(() => request(), 1000 * 60 * 5)
+  const interval = setInterval(() => request(), 1000 * 60 * 5)
+
+  async function dispose() {
+    clearInterval(interval)
+
+    await ps.dispose()
+
+    console.log(`${id} disposing`)
+  }
+
+  return dispose
 }
