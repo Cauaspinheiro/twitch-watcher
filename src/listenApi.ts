@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import Powershell from 'node-powershell'
 import open from 'open'
 import { Config, StreamerReq } from './types'
@@ -13,7 +14,9 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
     streamers.forEach(async (streamer) => {
       if (!streamersOpens.includes(streamer)) {
-        await open(`https://www.twitch.tv/${streamer}`)
+        const url = json.url?.replace('${streamer}', streamer) || `https://www.twitch.tv/${streamer}`
+
+        await open(url)
         streamersOpens.push(streamer)
         console.log(`${id} opening ${streamer}`)
       }

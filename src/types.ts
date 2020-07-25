@@ -4,6 +4,7 @@ export interface Config {
   twitch_secret: string,
   jwt: string,
   deactivate: boolean
+  url: string
 }
 
 interface Streamer {
