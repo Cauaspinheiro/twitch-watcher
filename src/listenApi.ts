@@ -5,7 +5,7 @@ import { Config, StreamerReq } from './types'
 import api from './services/axios'
 
 export default function listenToApi(id: string, json: Config) : () => Promise<void> {
-  const streamersOpens : string[] = []
+  let streamersOpens : string[] = []
 
   const ps = new Powershell({})
 
@@ -23,6 +23,17 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
     })
   }
 
+  async function openOnMulti(streamers : string[]) {
+    let url = 'https://www.multitwitch.tv'
+
+    streamers.forEach((streamer) => {
+      url = `${url}/${streamer}`
+    })
+
+    await open(url)
+    streamersOpens = streamers
+  }
+
   async function request() {
     const query = `user_login=${json.streamers.join('&user_login=')}`
 
@@ -38,7 +49,11 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
     if (res.data.length > 0) {
       const ids = res.data.map((streamer) => streamer.user_name)
 
-      await openArray(ids)
+      if (json.openOnMulti) {
+        openOnMulti(ids)
+      } else {
+        await openArray(ids)
+      }
     } else {
       await ps.addCommand('taskkill /IM msedge.exe /F')
 

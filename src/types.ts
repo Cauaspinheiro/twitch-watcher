@@ -5,6 +5,7 @@ export interface Config {
   jwt: string,
   deactivate: boolean
   url: string
+  openOnMulti: boolean
 }
 
 interface Streamer {
