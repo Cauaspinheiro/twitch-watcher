@@ -2,7 +2,8 @@ export interface Config {
   streamers: Array<string>,
   twitch_id: string,
   twitch_secret: string,
-  jwt: string
+  jwt: string,
+  deactivate: boolean
 }
 
 interface Streamer {
