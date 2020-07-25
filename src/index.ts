@@ -1,4 +1,4 @@
-import listen from './services/watch'
+import listen from './services/watchFile'
 import fn from './main'
 
 listen(fn)

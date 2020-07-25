@@ -22,9 +22,12 @@ export default function listen(fn: Fn) : void {
     fs.readFile(configPath, (err, data) => {
       if (err) throw err
 
-      dispose = fn(JSON.parse(data as any))
+      const config : Config = JSON.parse(data as any)
+
+      dispose = fn(config)
     })
   }
+
   readAndRun()
 
   watch(configPath, async (evt, name) => {
