@@ -1,23 +1,20 @@
 /* eslint-disable no-template-curly-in-string */
-import Powershell from 'node-powershell'
 import open from 'open'
 import { Config, StreamerReq } from './types'
 import api from './services/axios'
 
 export default function listenToApi(id: string, json: Config) : () => Promise<void> {
-  let streamersOpens : string[] = []
-
-  const ps = new Powershell({})
+  let openStreamers : string[] = []
 
   async function openArray(streamers : string[]) {
     console.log(`${id} has ${streamers}`)
 
     streamers.forEach(async (streamer) => {
-      if (!streamersOpens.includes(streamer)) {
+      if (!openStreamers.includes(streamer)) {
         const url = json.url?.replace('${streamer}', streamer) || `https://www.twitch.tv/${streamer}`
 
         await open(url)
-        streamersOpens.push(streamer)
+        openStreamers.push(streamer)
         console.log(`${id} opening ${streamer}`)
       }
     })
@@ -31,7 +28,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
     })
 
     await open(url)
-    streamersOpens = streamers
+    openStreamers = streamers
   }
 
   async function request() {
@@ -49,15 +46,19 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
     if (res.data.length > 0) {
       const ids = res.data.map((streamer) => streamer.user_name)
 
+      openStreamers = openStreamers.filter((streamer) => {
+        if (ids.includes(streamer)) return streamer
+
+        return undefined
+      })
+
       if (json.openOnMulti) {
         openOnMulti(ids)
       } else {
         await openArray(ids)
       }
     } else {
-      await ps.addCommand('taskkill /IM msedge.exe /F')
-
-      await ps.invoke().catch((error) => error)
+      openStreamers = []
     }
   }
 
@@ -67,8 +68,6 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
   async function dispose() {
     clearInterval(interval)
-
-    await ps.dispose()
 
     console.log(`${id} disposing`)
   }
