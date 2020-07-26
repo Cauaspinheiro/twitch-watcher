@@ -2,39 +2,37 @@
 import open from 'open'
 import { Config, StreamerReq } from './types'
 import api from './services/axios'
+import isArraysEqual from './utils/isArraysEqual'
 
 export default function listenToApi(id: string, json: Config) : () => Promise<void> {
   let openStreamers : string[] = []
 
   async function openArray(streamers : string[]) {
-    console.log(`${id} has ${streamers}`)
-
     streamers.forEach(async (streamer) => {
       if (!openStreamers.includes(streamer)) {
         const url = json.url?.replace('${streamer}', streamer) || `https://www.twitch.tv/${streamer}`
 
         await open(url)
         openStreamers.push(streamer)
-        console.log(`${id} opening ${streamer}`)
       }
     })
   }
 
   async function openOnMulti(streamers : string[]) {
-    let url = 'https://www.multitwitch.tv'
+    if (!isArraysEqual(streamers, openStreamers)) {
+      let url = 'https://www.multitwitch.tv'
 
-    streamers.forEach((streamer) => {
-      url = `${url}/${streamer}`
-    })
+      streamers.forEach((streamer) => {
+        url = `${url}/${streamer}`
+      })
 
-    await open(url)
-    openStreamers = streamers
+      await open(url)
+      openStreamers = streamers
+    }
   }
 
   async function request() {
     const query = `user_login=${json.streamers.join('&user_login=')}`
-
-    console.log(`${id} requesting api`)
 
     const { data: res } = await api.get<StreamerReq>(`/streams?${query}`, {
       headers: {
@@ -64,12 +62,10 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
   request()
 
-  const interval = setInterval(() => request(), 1000 * 60 * 5)
+  const interval = setInterval(() => request(), 1000 * 30)
 
   async function dispose() {
     clearInterval(interval)
-
-    console.log(`${id} disposing`)
   }
 
   return dispose
