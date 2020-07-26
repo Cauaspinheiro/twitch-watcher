@@ -6,6 +6,7 @@ export interface Config {
   deactivate: boolean
   url: string
   openOnMulti: boolean
+  repeatEachMs: number
 }
 
 interface Streamer {

@@ -62,7 +62,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
   request()
 
-  const interval = setInterval(() => request(), 1000 * 30)
+  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 60 * 3)
 
   async function dispose() {
     clearInterval(interval)
