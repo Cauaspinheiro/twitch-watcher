@@ -3,11 +3,18 @@ import open from 'open'
 import { Config, StreamerReq } from './types'
 import api from './services/axios'
 import isArraysEqual from './utils/isArraysEqual'
+import notify from './notifier'
 
 export default function listenToApi(id: string, json: Config) : () => Promise<void> {
   let openStreamers : string[] = []
 
   async function openArray(streamers : string[]) {
+    const newStreamers = streamers.map((streamer) => {
+      if (!openStreamers.includes(streamer)) return streamer
+
+      return undefined
+    })
+
     streamers.forEach(async (streamer) => {
       if (!openStreamers.includes(streamer)) {
         const url = json.url?.replace('${streamer}', streamer) || `https://www.twitch.tv/${streamer}`
@@ -16,10 +23,32 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
         openStreamers.push(streamer)
       }
     })
+
+    if (newStreamers.length > 0) {
+      if (newStreamers.length === 1) {
+        notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
+      } else {
+        notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
+      }
+    }
   }
 
   async function openOnMulti(streamers : string[]) {
     if (!isArraysEqual(streamers, openStreamers)) {
+      const newStreamers = streamers.map((streamer) => {
+        if (!openStreamers.includes(streamer)) return streamer
+
+        return undefined
+      })
+
+      if (newStreamers.length > 0) {
+        if (newStreamers.length === 1) {
+          notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
+        } else {
+          notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
+        }
+      }
+
       let url = 'https://www.multitwitch.tv'
 
       streamers.forEach((streamer) => {
@@ -44,11 +73,24 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
     if (res.data.length > 0) {
       const ids = res.data.map((streamer) => streamer.user_name)
 
+      const closedStreamers : string[] = []
+
       openStreamers = openStreamers.filter((streamer) => {
         if (ids.includes(streamer)) return streamer
 
+        closedStreamers.push(streamer)
+
         return undefined
       })
+
+      if (closedStreamers.length > 0) {
+        if (closedStreamers.length === 1) {
+          notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`, json)
+        } else {
+          notify('Alguns streamers fecharam a live',
+            `Streamers que ficarão off: ${closedStreamers.join(', ')}`, json)
+        }
+      }
 
       if (json.openOnMulti) {
         openOnMulti(ids)

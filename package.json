@@ -9,7 +9,7 @@
   "scripts": {
     "ct": "git-cz",
     "start": "tsc && cross-env NODE_ENV=prod node build/index.js",
-    "dev": "cross-env NODE_ENV=dev ts-node-dev src/index.ts"
+    "dev": "cross-env NODE_ENV=dev ts-node-dev --no-notify src/index.ts"
   },
   "devDependencies": {
     "@types/faker": "^4.1.12",
@@ -31,9 +31,11 @@
     }
   },
   "dependencies": {
+    "@types/node-notifier": "^6.0.1",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "faker": "^4.1.0",
+    "node-notifier": "^7.0.2",
     "node-powershell": "^4.0.0",
     "node-watch": "^0.6.4",
     "open": "^7.1.0"
