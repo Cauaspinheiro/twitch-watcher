@@ -9,10 +9,8 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
   let openStreamers : string[] = []
 
   async function openArray(streamers : string[]) {
-    const newStreamers = streamers.map((streamer) => {
+    const newStreamers = streamers.filter((streamer) => {
       if (!openStreamers.includes(streamer)) return streamer
-
-      return undefined
     })
 
     streamers.forEach(async (streamer) => {
@@ -28,7 +26,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
       if (newStreamers.length === 1) {
         notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
       } else {
-        notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
+        notify('Novos streamers on!!!', `NovosAAAAAAAAA streamers: ${newStreamers.join(', ')}`, json)
       }
     }
   }
@@ -79,8 +77,6 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
         if (ids.includes(streamer)) return streamer
 
         closedStreamers.push(streamer)
-
-        return undefined
       })
 
       if (closedStreamers.length > 0) {
@@ -104,7 +100,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
   request()
 
-  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 60 * 3)
+  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 30)
 
   async function dispose() {
     clearInterval(interval)

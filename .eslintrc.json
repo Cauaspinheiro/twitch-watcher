@@ -10,6 +10,8 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "array-callback-return": "off",
+    "consistent-return": "warn",
     "camelcase": "off",
     "no-unused-vars": "off",
     "semi": ["warn", "never"],
