@@ -1,5 +1,6 @@
 export interface Config {
-  streamers: Array<string>,
+  streamers: StreamerLevel[],
+  level: Level
   twitch_id: string,
   twitch_secret: string,
   jwt: string,
@@ -10,6 +11,13 @@ export interface Config {
   notify: boolean
   updated: boolean
 }
+
+interface StreamerLevel {
+  username: string,
+  level: Level
+}
+
+type Level = 0 | 1 | 2 | 3
 
 interface Streamer {
   'user_name': string,

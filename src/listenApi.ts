@@ -5,7 +5,7 @@ import api from './services/axios'
 import isArraysEqual from './utils/isArraysEqual'
 import notify from './notifier'
 
-export default function listenToApi(id: string, json: Config) : () => Promise<void> {
+export default function listenToApi(id: string, config: Config) : () => Promise<void> {
   let openStreamers : string[] = []
 
   async function openArray(streamers : string[]) {
@@ -15,18 +15,33 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
     streamers.forEach(async (streamer) => {
       if (!openStreamers.includes(streamer)) {
-        const url = json.url?.replace('${streamer}', streamer) || `https://www.twitch.tv/${streamer}`
+        if (config.url) {
+          await open(config.url.replace('${streamer}', streamer))
+          return openStreamers.push(streamer)
+        }
 
-        await open(url)
-        openStreamers.push(streamer)
+        switch (config.level) {
+          case 0:
+            await open(`https://www.twitch.tv/popout/${streamer}/chat?popout=true`)
+            break
+          case 1:
+            await open(`https://player.twitch.tv/?channel=${streamer}&enableExtensions=true&muted=true&parent=twitch.tv&player=popout`)
+            break
+
+          default:
+            await open(`https://www.twitch.tv/${streamer}`)
+            break
+        }
+
+        return openStreamers.push(streamer)
       }
     })
 
     if (newStreamers.length > 0) {
       if (newStreamers.length === 1) {
-        notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
+        notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, config)
       } else {
-        notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
+        notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, config)
       }
     }
   }
@@ -39,11 +54,11 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
         return undefined
       })
 
-      if (newStreamers.length > 0 && !json.updated) {
+      if (newStreamers.length > 0 && !config.updated) {
         if (newStreamers.length === 1) {
-          notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
+          notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, config)
         } else {
-          notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
+          notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, config)
         }
       }
 
@@ -59,48 +74,78 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
   }
 
   async function request() {
-    const query = `user_login=${json.streamers.join('&user_login=')}`
+    const streamers : string[] = []
 
-    const { data: res } = await api.get<StreamerReq>(`/streams?${query}`, {
-      headers: {
-        authorization: `Bearer ${json.jwt}`,
-        'client-id': json.twitch_id,
-      },
+    config.streamers.forEach((streamer) => {
+      if (streamer.level <= config.level) streamers.push(streamer.username)
     })
 
-    if (res.data.length > 0) {
-      const ids = res.data.map((streamer) => streamer.user_name)
+    if (!streamers) {
+      notify('Sem streamers para verificar!',
+        `Você não passou nenhum streamer no nível ${config.level}, atualize seu arquivo de configuração. Parando serviço...`,
+        config)
+      process.exit(0)
+    }
 
-      const closedStreamers : string[] = []
+    const query = `user_login=${streamers.join('&user_login=')}`
 
-      openStreamers = openStreamers.filter((streamer) => {
-        if (ids.includes(streamer)) return streamer
-
-        closedStreamers.push(streamer)
+    try {
+      const { data: res } = await api.get<StreamerReq>(`/streams?${query}`, {
+        headers: {
+          authorization: `Bearer ${config.jwt}`,
+          'client-id': config.twitch_id,
+        },
       })
 
-      if (closedStreamers.length > 0 && !json.updated) {
-        if (closedStreamers.length === 1) {
-          notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`, json)
-        } else {
-          notify('Alguns streamers fecharam a live',
-            `Streamers que ficaram off: ${closedStreamers.join(', ')}`, json)
-        }
-      }
+      if (res.data.length > 0) {
+        const ids = res.data.map((streamer) => streamer.user_name)
 
-      if (json.openOnMulti) {
-        openOnMulti(ids)
+        const closedStreamers : string[] = []
+
+        openStreamers = openStreamers.filter((streamer) => {
+          if (ids.includes(streamer)) return streamer
+
+          closedStreamers.push(streamer)
+        })
+
+        if (closedStreamers.length > 0 && !config.updated) {
+          if (closedStreamers.length === 1) {
+            notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`, config)
+          } else {
+            notify('Alguns streamers fecharam a live',
+              `Streamers que ficaram off: ${closedStreamers.join(', ')}`, config)
+          }
+        }
+
+        switch (config.level) {
+          case 0:
+            openArray(streamers)
+            break
+          case 1:
+            openArray(streamers)
+            break
+          case 2:
+            if (config.url) { openArray(streamers) } else {
+              openOnMulti(streamers)
+            }
+            break
+          case 3:
+            openArray(streamers)
+            break
+          default:
+            break
+        }
       } else {
-        await openArray(ids)
+        openStreamers = []
       }
-    } else {
-      openStreamers = []
+    } catch (error) {
+      console.log(error)
     }
   }
 
   request()
 
-  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 60 * 3)
+  const interval = setInterval(() => request(), config.repeatEachMs || 1000 * 60 * 3)
 
   async function dispose() {
     clearInterval(interval)
