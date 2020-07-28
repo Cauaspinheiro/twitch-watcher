@@ -5,7 +5,7 @@ import os from 'os'
 import { Config } from '../types'
 import notify from '../notifier'
 
-export default function listen(fn: (config: Config) => () => unknown) :void {
+export default function listen(fn: (config: Config,) => () => unknown) :void {
   let configPath : string
 
   if (process.env.NODE_ENV === 'dev') {
@@ -51,6 +51,8 @@ export default function listen(fn: (config: Config) => () => unknown) :void {
 
       if (JSON.stringify(pastConfig) !== JSON.stringify(config)) {
         await dispose()
+
+        config.updated = true
 
         run(config)
       }
