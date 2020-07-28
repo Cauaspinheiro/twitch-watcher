@@ -1,13 +1,11 @@
-import watch from 'node-watch'
-import path from 'path'
+import fsWatch from 'node-watch'
 import fs from 'fs'
+import path from 'path'
 import os from 'os'
 import { Config } from '../types'
 import notify from '../notifier'
 
-type Fn = (json: Config) => () => Promise<void>
-
-export default function listen(fn: Fn) : void {
+export default function listen(fn: (config: Config) => () => unknown) :void {
   let configPath : string
 
   if (process.env.NODE_ENV === 'dev') {
@@ -17,39 +15,47 @@ export default function listen(fn: Fn) : void {
       'desktop', 'twitch.json')
   }
 
-  let dispose : () => Promise<void>
+  let dispose: () => unknown
 
-  function readAndRun(updated: boolean) {
-    fs.readFile(configPath, (err, data) => {
-      if (err) throw err
+  function read() {
+    return JSON.parse(fs.readFileSync(configPath) as unknown as string) as Config
+  }
 
-      const config : Config = JSON.parse(data as any)
+  function run(config: Config) {
+    dispose = fn(config)
 
-      config.updated = updated
+    if (!config.deactivate) {
+      if (config.updated) {
+        notify('Atualizando Twitch Watcher',
+          'Atualizando o Twitch Watcher usando as novas configurações passadas no JSON',
+          config)
+      } else {
+        notify('Abrindo o Twitch Watcher',
+          'Verificando se existem streamers on...',
+          config)
+      }
+    }
+  }
 
-      dispose = fn(config)
+  let config = read()
 
-      if (!config.deactivate) {
-        if (updated) {
-          notify('Atualizando Twitch Watcher',
-            'Atualizando o Twitch Watcher usando as novas configurações passadas no JSON',
-            config)
-        } else {
-          notify('Abrindo o Twitch Watcher',
-            'Verificando se existem streamers on...',
-            config)
-        }
+  run(config)
+
+  function watch() {
+    fsWatch(configPath, async (evt, name) => {
+      if (evt === 'remove') return
+
+      const pastConfig = config
+
+      config = read()
+
+      if (JSON.stringify(pastConfig) !== JSON.stringify(config)) {
+        await dispose()
+
+        run(config)
       }
     })
   }
 
-  readAndRun(false)
-
-  watch(configPath, async (evt, name) => {
-    if (evt === 'remove') return
-
-    await dispose()
-
-    readAndRun(true)
-  })
+  watch()
 }

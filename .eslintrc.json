@@ -14,6 +14,7 @@
     "consistent-return": "warn",
     "camelcase": "off",
     "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "semi": ["warn", "never"],
     "import/prefer-default-export": "warn",
     "import/extensions": [
