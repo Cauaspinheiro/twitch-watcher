@@ -119,18 +119,18 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
 
         switch (config.level) {
           case 0:
-            openArray(streamers)
+            openArray(ids)
             break
           case 1:
-            openArray(streamers)
+            openArray(ids)
             break
           case 2:
-            if (config.url) { openArray(streamers) } else {
-              openOnMulti(streamers)
+            if (config.url) { openArray(ids) } else {
+              openOnMulti(ids)
             }
             break
           case 3:
-            openArray(streamers)
+            openArray(ids)
             break
           default:
             break
