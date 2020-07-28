@@ -13,8 +13,6 @@ export default function fn(json: Config) : () => Promise<void> {
     return setTimeout(() => process.exit(0), 1000 * 2) as any
   }
 
-  notify('Abrindo Twitch Watcher', 'Verificando se streamers estão online', json)
-
   const id = faker.random.alphaNumeric(4)
 
   const dispose = listenToApi(id, json)

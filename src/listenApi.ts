@@ -26,7 +26,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
       if (newStreamers.length === 1) {
         notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
       } else {
-        notify('Novos streamers on!!!', `NovosAAAAAAAAA streamers: ${newStreamers.join(', ')}`, json)
+        notify('Novos streamers on!!!', `Novos streamers: ${newStreamers.join(', ')}`, json)
       }
     }
   }
@@ -39,7 +39,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
         return undefined
       })
 
-      if (newStreamers.length > 0) {
+      if (newStreamers.length > 0 && !json.updated) {
         if (newStreamers.length === 1) {
           notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, json)
         } else {
@@ -79,12 +79,12 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
         closedStreamers.push(streamer)
       })
 
-      if (closedStreamers.length > 0) {
+      if (closedStreamers.length > 0 && !json.updated) {
         if (closedStreamers.length === 1) {
           notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`, json)
         } else {
           notify('Alguns streamers fecharam a live',
-            `Streamers que ficarão off: ${closedStreamers.join(', ')}`, json)
+            `Streamers que ficaram off: ${closedStreamers.join(', ')}`, json)
         }
       }
 
@@ -100,7 +100,7 @@ export default function listenToApi(id: string, json: Config) : () => Promise<vo
 
   request()
 
-  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 30)
+  const interval = setInterval(() => request(), json.repeatEachMs || 1000 * 60 * 3)
 
   async function dispose() {
     clearInterval(interval)

@@ -8,6 +8,7 @@ export interface Config {
   openOnMulti: boolean
   repeatEachMs: number
   notify: boolean
+  updated: boolean
 }
 
 interface Streamer {
