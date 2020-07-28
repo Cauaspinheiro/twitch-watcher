@@ -16,9 +16,7 @@ export default function notify(title: string, message: string, config: Config) :
 
   if (config.notify === true) {
     windowsNotifier.notify(options)
-  } else if (config.notify === false) {
-    windowsNotifier.notify(options)
-  } else if (process.env.NODE_ENV !== 'dev') {
+  } else if (config.notify === undefined && process.env.NODE_ENV !== 'dev') {
     windowsNotifier.notify(options)
   }
 }
