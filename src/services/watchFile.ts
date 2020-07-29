@@ -5,7 +5,7 @@ import os from 'os'
 import { Config } from '../types'
 import notify from '../notifier'
 
-export default function listen(fn: (config: Config,) => () => unknown) :void {
+export default function listen(fn: (config: Config, filePath: string) => () => unknown) :void {
   let configPath : string
 
   if (process.env.NODE_ENV === 'dev') {
@@ -22,7 +22,7 @@ export default function listen(fn: (config: Config,) => () => unknown) :void {
   }
 
   function run(config: Config) {
-    dispose = fn(config)
+    dispose = fn(config, configPath)
 
     if (!config.deactivate) {
       if (config.updated) {

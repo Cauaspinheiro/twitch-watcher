@@ -1,12 +1,16 @@
 /* eslint-disable no-template-curly-in-string */
 import open from 'open'
+import fs from 'fs'
+import Powershell from 'node-powershell'
 import { Config, StreamerReq } from './types'
 import api from './services/axios'
 import isArraysEqual from './utils/isArraysEqual'
 import notify from './notifier'
 
-export default function listenToApi(id: string, config: Config) : () => Promise<void> {
+export default function listenToApi(id: string,
+  config: Config, filePath: string) {
   let openStreamers : string[] = []
+  const ps = new Powershell({})
 
   async function openArray(streamers : string[]) {
     const newStreamers = streamers.filter((streamer) => {
@@ -25,6 +29,7 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
             await open(`https://www.twitch.tv/popout/${streamer}/chat?popout=true`)
             break
           case 1:
+            await open(`https://www.twitch.tv/popout/${streamer}/chat?popout=true`)
             await open(`https://player.twitch.tv/?channel=${streamer}&enableExtensions=true&muted=true&parent=twitch.tv&player=popout`)
             break
 
@@ -54,7 +59,7 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
         return undefined
       })
 
-      if (newStreamers.length > 0 && !config.updated) {
+      if (newStreamers.length > 0) {
         if (newStreamers.length === 1) {
           notify('Novo streamer on!!!', `${newStreamers.toString()} está online`, config)
         } else {
@@ -73,7 +78,7 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
     }
   }
 
-  async function request() {
+  async function request(firstTime?: boolean) {
     const streamers : string[] = []
 
     config.streamers.forEach((streamer) => {
@@ -108,7 +113,7 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
           closedStreamers.push(streamer)
         })
 
-        if (closedStreamers.length > 0 && !config.updated) {
+        if (closedStreamers.length > 0) {
           if (closedStreamers.length === 1) {
             notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`, config)
           } else {
@@ -137,15 +142,34 @@ export default function listenToApi(id: string, config: Config) : () => Promise<
         }
       } else {
         openStreamers = []
+
+        if (config.shutDown) {
+          const newConfig = config
+
+          delete newConfig.shutDown
+          delete newConfig.updated
+          fs.writeFileSync(filePath, JSON.stringify(newConfig, undefined, 1))
+
+          if (firstTime) {
+            notify('Nenhum streamer on para ouvir!',
+              'Você ativou a opção para desligar quando acabarem as lives mas nenhuma live está on. Encerrando processo...',
+              config)
+            process.exit(0)
+          } else {
+            await ps.addCommand('shutdown /s')
+            await ps.invoke()
+          }
+        }
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  request()
+  request(true)
 
-  const interval = setInterval(() => request(), config.repeatEachMs || 1000 * 60 * 3)
+  const interval = setInterval(() => request(), config.repeatEachMs || config.shutDown
+    ? 1000 * 60 * 10 : 1000 * 60 * 2)
 
   async function dispose() {
     clearInterval(interval)

@@ -3,7 +3,7 @@ import { Config } from './types'
 import listenToApi from './listenApi'
 import notify from './notifier'
 
-export default function fn(json: Config) : () => Promise<void> {
+export default function fn(json: Config, filePath: string) : () => Promise<void> {
   if (json.deactivate) {
     notify(
       'Desativando...',
@@ -15,7 +15,7 @@ export default function fn(json: Config) : () => Promise<void> {
 
   const id = faker.random.alphaNumeric(4)
 
-  const dispose = listenToApi(id, json)
+  const dispose = listenToApi(id, json, filePath)
 
   return dispose
 }

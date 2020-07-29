@@ -10,6 +10,7 @@ export interface Config {
   repeatEachMs: number
   notify: boolean
   updated: boolean
+  shutDown: boolean
 }
 
 interface StreamerLevel {
