@@ -10,6 +10,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "no-template-curly-in-string": "off",
     "array-callback-return": "off",
     "consistent-return": "warn",
     "camelcase": "off",
