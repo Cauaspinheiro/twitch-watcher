@@ -1,21 +1,59 @@
-import faker from 'faker'
-import { Config } from './types'
-import listenToApi from './listenApi'
-import notify from './notifier'
+import useConfig from './hooks/useConfig'
+import notify from './services/notifier'
+import streamersController from './useCases/streamersController'
+import shutdown from './useCases/shutdown'
 
-export default function fn(json: Config, filePath: string) : () => Promise<void> {
-  if (json.deactivate) {
-    notify(
-      'Desativando...',
-      'Usar a opção [deactivate] faz com que o serviço da Twitch-Watcher não rode, caso queria mudar, passe como false ou retire ela de twitch.json',
-      json,
-    )
-    return setTimeout(() => process.exit(0), 1000 * 2) as any
+export default async function main(firstTime?: boolean) : Promise<unknown> {
+  const config = useConfig()
+
+  if (config.deactivate) {
+    await notify('Desativando...',
+      'Usar a opção [deactivate] faz com que o serviço da Twitch-Watcher não rode, caso queria mudar, passe como false ou retire ela de twitch.json')
+
+    process.exit(0)
   }
 
-  const id = faker.random.alphaNumeric(4)
+  const configStreamers = config.streamers.map((streamer) => {
+    if (streamer.level <= config.level) return streamer.username.toLowerCase()
+  })
 
-  const dispose = listenToApi(id, json, filePath)
+  if (configStreamers.length <= 0) {
+    return notify('Sem streamers para verificar!',
+      `Você não passou nenhum streamer no nível ${config.level}, atualize seu arquivo de configuração. Parando serviço...`)
+  }
 
-  return dispose
+  const {
+    closedStreamers,
+    openStreamers,
+    newStreamers,
+  } = await streamersController(configStreamers as string[])
+
+  if (newStreamers && newStreamers.length > 0) {
+    if (newStreamers.length === 1) {
+      notify('Alguém abriu a live!!!', `${newStreamers.toString()} abriu a live! Aproveite :)`)
+    } else {
+      notify('Alguns streamers abriram a live!!!',
+        `Streamers que ficaram on: ${newStreamers.join(', ')}`)
+    }
+  }
+
+  if (closedStreamers && closedStreamers.length > 0) {
+    if (closedStreamers.length === 1) {
+      notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`)
+    } else {
+      notify('Alguns streamers fecharam a live',
+        `Streamers que ficaram off: ${closedStreamers.join(', ')}`)
+    }
+  }
+
+  if (openStreamers && openStreamers.length <= 0) {
+    if (config.shutDown) {
+      if (firstTime) {
+        return notify('Sem streamers para verificar!',
+          'Você ativou a opção para desligar quando acabarem as lives mas nenhuma live está on.')
+      }
+
+      await shutdown()
+    }
+  }
 }
