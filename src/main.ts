@@ -13,8 +13,10 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
     process.exit(0)
   }
 
-  const configStreamers = config.streamers.map((streamer) => {
-    if (streamer.level <= config.level) return streamer.username.toLowerCase()
+  const configStreamers : string[] = []
+
+  config.streamers.forEach((streamer) => {
+    if (streamer.level <= config.level) configStreamers.push(streamer.username.toLowerCase())
   })
 
   if (configStreamers.length <= 0) {
@@ -26,7 +28,7 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
     closedStreamers,
     openStreamers,
     newStreamers,
-  } = await streamersController(configStreamers as string[])
+  } = await streamersController(configStreamers)
 
   if (newStreamers && newStreamers.length > 0) {
     if (newStreamers.length === 1) {
