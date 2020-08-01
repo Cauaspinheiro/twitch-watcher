@@ -16,8 +16,6 @@ export default async function getStreamers(streamers: string[]) : Promise<string
 
   api.defaults.headers['client-id'] = config.twitch_api.twitch_id
 
-  console.log(streamers)
-
   const query = `user_login=${streamers.join('&user_login=')}`
 
   try {
