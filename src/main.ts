@@ -13,6 +13,11 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
     process.exit(0)
   }
 
+  if (config.shutDown) {
+    await notify('Esperando para desligar...',
+      'Usar a opção "shutDown" faz com que o seu PC desligue depois que nenhum streamer está mais em live.')
+  }
+
   const configStreamers : string[] = []
 
   config.streamers.forEach((streamer) => {
