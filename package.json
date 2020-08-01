@@ -39,6 +39,8 @@
     "node-notifier": "^7.0.2",
     "node-powershell": "^4.0.0",
     "node-watch": "^0.6.4",
-    "open": "^7.1.0"
+    "open": "^7.1.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
   }
 }
