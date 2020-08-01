@@ -9,6 +9,6 @@ export default function isArraysEqual(a: Array<unknown>, b: Array<unknown>) : bo
   for (let i = 0; i < a.length; i += 1) {
     if (a[i] !== b[i]) return false
   }
-  
+
   return true
 }
