@@ -26,7 +26,7 @@ export default async function streamersController(ids: string[]) : Promise<IRetu
   const pastController = cache.get<IStreamersController>('streamersController')
 
   if (pastController) {
-    logger.info(`[useCases/streamersController]: pastController was found in cache - ${pastController}`)
+    logger.info(`[useCases/streamersController]: pastController was found in cache - ${JSON.stringify(pastController)}`)
 
     openStreamers = liveStreamers?.filter((streamer) => {
       if (pastController.openStreamers?.includes(streamer.toLowerCase())) {

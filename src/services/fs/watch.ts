@@ -24,6 +24,8 @@ export default function watch(configPath: string, callback: () => () => unknown)
     if (JSON.stringify(pastConfig) !== JSON.stringify(config)) {
       logger.info(`[services/fs/watch]: ${configPath} changed`)
 
+      logger.info(`[services/fs/watch]: Past config: ${JSON.stringify(pastConfig)} New Config: ${JSON.stringify(config)}`)
+
       logger.info('[services/fs/watch]: Calling dispose function')
 
       if (dispose) await dispose()

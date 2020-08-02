@@ -34,7 +34,7 @@ export default function notify(title: string, message: string) : Promise<unknown
   if (config.notify === undefined && process.env.NODE_ENV !== 'dev') {
     windowsNotifier.notify(options)
 
-    logger.info('[/services/notifier]: notifying because config.true != false and process.env.NODE_ENV != dev')
+    logger.info('[/services/notifier]: notifying because config.notify == undefined and process.env.NODE_ENV != dev')
 
     return timeout(1000)
   }
