@@ -1,4 +1,5 @@
 import open from 'open'
+import logger from '../services/logger'
 
 export default async function openOnMulti(newStreamers: string[],
   openStreamers?: string[]) : Promise<void> {
@@ -10,6 +11,18 @@ export default async function openOnMulti(newStreamers: string[],
     streamers.forEach((streamer) => {
       url = `${url}/${streamer}`
     })
+
+    logger.info(`[useCases/openArray]: opening ${streamers} in multitwitch`)
+
+    await open(url)
+  } else {
+    let url = 'https://www.multitwitch.tv'
+
+    newStreamers.forEach((streamer) => {
+      url = `${url}/${streamer}`
+    })
+
+    logger.info(`[useCases/openArray]: opening ${newStreamers} in multitwitch`)
 
     await open(url)
   }

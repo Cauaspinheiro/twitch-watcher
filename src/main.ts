@@ -47,7 +47,7 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
   } = await streamersController(configStreamers)
 
   if (newStreamers && newStreamers.length > 0) {
-    logger.info('[main]: notifying new streamers')
+    logger.info(`[main]: notifying new streamers: ${newStreamers}`)
 
     if (newStreamers.length === 1) {
       notify('Alguém abriu a live!!!', `${newStreamers.toString()} abriu a live! Aproveite :)`)
@@ -58,7 +58,7 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
   }
 
   if (closedStreamers && closedStreamers.length > 0) {
-    logger.info('[main]: notifying closed streamers')
+    logger.info(`[main]: notifying closed streamers: ${closedStreamers}`)
 
     if (closedStreamers.length === 1) {
       notify('Alguém fechou a live...', `${closedStreamers.toString()} fechou a live`)
@@ -80,4 +80,6 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
       await shutdown()
     }
   }
+
+  return {} as Promise<unknown>
 }

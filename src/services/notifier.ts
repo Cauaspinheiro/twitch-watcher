@@ -1,6 +1,7 @@
 import notifier from 'node-notifier'
 import path from 'path'
 import useConfig from '../hooks/useConfig'
+import logger from './logger'
 
 const windowsNotifier = new notifier.WindowsToaster()
 
@@ -9,6 +10,8 @@ function timeout(ms: number) {
 }
 
 export default function notify(title: string, message: string) : Promise<unknown> {
+  logger.info('[/services/notifier]: getting config from useConfig')
+
   const config = useConfig()
 
   const options = {
@@ -23,11 +26,15 @@ export default function notify(title: string, message: string) : Promise<unknown
   if (config.notify === true) {
     windowsNotifier.notify(options)
 
+    logger.info('[/services/notifier]: notifying because config.true == true')
+
     return timeout(1000)
   }
 
   if (config.notify === undefined && process.env.NODE_ENV !== 'dev') {
     windowsNotifier.notify(options)
+
+    logger.info('[/services/notifier]: notifying because config.true != false and process.env.NODE_ENV != dev')
 
     return timeout(1000)
   }
