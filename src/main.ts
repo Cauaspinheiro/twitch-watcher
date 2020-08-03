@@ -71,10 +71,10 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
 
     if (closedStreamers.length === 1) {
       notify(notifyMessages.closedStreamer.title,
-        `${closedStreamers.toString()} fechou a live`)
+        `Parando de verificar ${closedStreamers.toString()} porque ele fechou a live ou não está mais no nível para ser verificado`)
     } else {
       notify(notifyMessages.closedStreamers.title,
-        `Streamers que ficaram off: ${closedStreamers.join(', ')}`)
+        `${closedStreamers.join(', ')} ficaram off ou pararam de estar no nível para ser verificados`)
     }
   }
 

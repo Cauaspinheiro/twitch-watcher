@@ -17,10 +17,10 @@ const notifyMessages = {
     title: 'Alguns streamers abriram a live!!!',
   },
   closedStreamer: {
-    title: 'Alguém fechou a live...',
+    title: 'Parando de verificar alguém...',
   },
   closedStreamers: {
-    title: 'Alguns streamers fecharam a live',
+    title: 'Parando de verificar...',
   },
   shutDownFn: {
     title: 'Sem streamers para verificar!',
