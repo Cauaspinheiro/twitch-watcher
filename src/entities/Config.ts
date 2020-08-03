@@ -10,7 +10,7 @@ export interface IConfig {
   notify: boolean
   shutDown: boolean
   restart: boolean
-
+  getPoints: boolean
 }
 
 interface TwitchApi {

@@ -3,7 +3,7 @@ import useConfig from '../hooks/useConfig'
 import main from '../main'
 import logger from '../services/logger'
 import msToMinutesAndSeconds from '../utils/msToMinutesAndSeconds'
-import pointsController from '../controllers/pointsController'
+import repeatPoints from './repeatPoints'
 
 export default function repeat() : () => Promise<void> {
   logger.info('[useCases/repeat]: getting config from hook')
@@ -16,15 +16,7 @@ export default function repeat() : () => Promise<void> {
   const ms = config.twitch_api.repeatEachMs || config.shutDown
     ? 1000 * 60 * 10 : 1000 * 60 * 2
 
-  let pointsInterval :NodeJS.Timeout
-
-  if (config.stream_elements_api) {
-    const pointsMs = config.stream_elements_api.repeatEachMs || 1000 * 60 * 10
-
-    logger.info(`[useCases]: Setting interval to run pointsController each ${msToMinutesAndSeconds(pointsMs)} minutes`)
-
-    pointsInterval = setInterval(() => pointsController(), pointsMs)
-  }
+  const pointsInterval = repeatPoints()
 
   logger.info(`[useCases]: Setting interval to run main each ${msToMinutesAndSeconds(ms)} minutes`)
 
