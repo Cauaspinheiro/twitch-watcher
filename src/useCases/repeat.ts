@@ -6,7 +6,6 @@ import msToMinutesAndSeconds from '../utils/msToMinutesAndSeconds'
 import repeatPoints from './repeatPoints'
 
 export default function repeat() : () => Promise<void> {
-  logger.info('[useCases/repeat]: getting config from hook')
   const config = useConfig()
 
   logger.info('[useCases/repeat]: Running main at first time')
@@ -30,7 +29,5 @@ export default function repeat() : () => Promise<void> {
     if (pointsInterval) {
       clearInterval(pointsInterval)
     }
-
-    logger.info('[useCases/repeat]: Clearing interval...')
   }
 }

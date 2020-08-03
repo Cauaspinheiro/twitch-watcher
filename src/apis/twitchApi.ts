@@ -14,16 +14,11 @@ interface Response {
 }
 
 interface StreamsHeaders {
-  'ratelimit-limit': number
   'ratelimit-remaining': number
 }
 
 export default async function getStreamers(streamers: string[]) : Promise<string[] | undefined> {
-  logger.info('[/apis/twitchApi]: getting config from useConfig')
-
   const config = useConfig()
-
-  logger.info('[/apis/twitchApi]: Setting axios api with headers authorization and client-id')
 
   const api = axios.create({ baseURL: 'https://api.twitch.tv/helix' })
 
@@ -40,7 +35,7 @@ export default async function getStreamers(streamers: string[]) : Promise<string
 
     const usernames = res.data?.map((streamer) => streamer.user_name.toLowerCase())
 
-    logger.info(`[/apis/twitchApi]: ratelimit-limit: ${headers['ratelimit-limit']} ratelimit-remaining: ${headers['ratelimit-remaining']}`)
+    logger.info(`[/apis/twitchApi]: ratelimit-remaining: ${headers['ratelimit-remaining']}`)
 
     return usernames
   } catch (err) {

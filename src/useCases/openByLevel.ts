@@ -6,8 +6,6 @@ import logger from '../services/logger'
 
 export default async function openByLevel(ids: string[],
   openStreamers?: string[]) : Promise<void> {
-  logger.info('[useCases/openByLevel]: getting config from useConfig')
-
   const config = useConfig()
 
   logger.info(`[useCases/openByLevel]: switch config.level (${config.level})`)

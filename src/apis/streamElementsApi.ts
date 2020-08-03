@@ -4,9 +4,15 @@ import useConfig from '../hooks/useConfig'
 import cache from '../services/nodeCache'
 import { IStreamersController } from '../controllers/streamersController'
 
-interface StreamElementsRes {
+interface StreamElementsResBody {
   channel: string
   points: number
+}
+interface StreamElementsRes {
+  data: StreamElementsResBody
+  headers: {
+    'x-ratelimit-remaining': number
+  }
 }
 
 interface StreamersId {
@@ -20,8 +26,6 @@ interface StreamersPoints {
 }
 
 export default async function getPoints() : Promise<StreamersPoints[] | undefined> {
-  logger.info('[/apis/streamElementsApi]: getting config from useConfig')
-
   const config = useConfig()
 
   if (!config.stream_elements_api?.jwt || !config.stream_elements_api?.user) {
@@ -73,14 +77,14 @@ export default async function getPoints() : Promise<StreamersPoints[] | undefine
 
       const { user } = config.stream_elements_api!
 
-      return api.get<StreamElementsRes>(`/${id}/${user}`)
+      return api.get<StreamElementsResBody>(`/${id}/${user}`)
     })
 
     const res = await Promise.all(promises)
 
-    const points : StreamElementsRes[] = []
+    const points : StreamElementsResBody[] = []
 
-    res.forEach((response) => {
+    res.forEach((response: StreamElementsRes) => {
       const data = {
         channel: response.data.channel,
         points: response.data.points,
@@ -88,6 +92,10 @@ export default async function getPoints() : Promise<StreamersPoints[] | undefine
 
       points.push(data)
     })
+
+    const { headers } : StreamElementsRes = res[res.length - 1]
+
+    logger.info(`[/apis/streamElementsApi]: ratelimit-remaining: ${headers['x-ratelimit-remaining']}`)
 
     const streamersPoints : StreamersPoints[] = []
 

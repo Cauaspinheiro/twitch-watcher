@@ -21,8 +21,6 @@ export default async function streamersController(ids: string[]) : Promise<IRetu
 
   const liveStreamers = await getStreamers(ids)
 
-  logger.info('[controllers/streamersController]: getting pastController from cache')
-
   const pastController = cache.get<IStreamersController>('streamersController')
 
   if (pastController) {

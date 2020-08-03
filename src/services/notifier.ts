@@ -10,8 +10,6 @@ function timeout(ms: number) {
 }
 
 export default function notify(title: string, message: string) : Promise<unknown> {
-  logger.info('[/services/notifier]: getting config from useConfig')
-
   const config = useConfig()
 
   const options = {

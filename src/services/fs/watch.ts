@@ -17,8 +17,6 @@ export default function watch(configPath: string, callback: () => () => unknown)
 
     const pastConfig = config
 
-    logger.info(`[services/fs/watch]: Reading ${configPath}`)
-
     config = read(configPath)
 
     if (JSON.stringify(pastConfig) !== JSON.stringify(config)) {

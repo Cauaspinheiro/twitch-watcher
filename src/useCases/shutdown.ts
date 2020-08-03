@@ -5,14 +5,10 @@ import cache from '../services/nodeCache'
 import logger from '../services/logger'
 
 export default async function shutdown() : Promise<void> {
-  logger.info('[/useCases/shutdown]: getting config from useConfig')
-
   const config = useConfig()
   const ps = new Powershell({})
 
   delete config.shutDown
-
-  logger.info('[/useCases/shutdown]: getting configPath from cache')
 
   const configPath = cache.get<string>('configPath')
 

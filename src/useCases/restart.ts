@@ -4,8 +4,6 @@ import logger from '../services/logger'
 import useConfig from '../hooks/useConfig'
 
 export default function restart() : void {
-  logger.info('[/useCases/restart]: getting config from useConfig')
-
   const config = useConfig()
 
   delete config.restart

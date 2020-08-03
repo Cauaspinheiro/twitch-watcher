@@ -7,8 +7,6 @@ import notifyMessages from './static/notifyMessages'
 import restart from './useCases/restart'
 
 export default async function main(firstTime?: boolean) : Promise<unknown> {
-  logger.info('[main]: getting config from hook')
-
   const config = useConfig()
 
   if (config.restart) {
