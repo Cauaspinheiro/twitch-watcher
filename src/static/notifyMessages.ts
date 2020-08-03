@@ -26,6 +26,10 @@ const notifyMessages = {
     title: 'Sem streamers para verificar!',
     message: 'Você ativou a opção para desligar quando acabarem as lives mas nenhuma live está on.',
   },
+  restart: {
+    title: 'Reiniciando Twitch Watcher...',
+    message: 'Você ativou a opção para restart o Twitch Watcher no arquivo de configurações',
+  },
 }
 
 export default notifyMessages

@@ -4,11 +4,20 @@ import streamersController from './useCases/streamersController'
 import shutdown from './useCases/shutdown'
 import logger from './services/logger'
 import notifyMessages from './static/notifyMessages'
+import restart from './useCases/restart'
 
 export default async function main(firstTime?: boolean) : Promise<unknown> {
   logger.info('[main]: getting config from hook')
 
   const config = useConfig()
+
+  if (config.restart) {
+    logger.info('[main]: config.restart == true, restarting...')
+
+    await notify(notifyMessages.restart.title, notifyMessages.restart.message)
+
+    return restart()
+  }
 
   if (config.deactivate) {
     logger.info('[main]: config.deactivate == true, deactivating...')

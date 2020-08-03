@@ -13,6 +13,7 @@ export interface IConfig {
   url: string
   notify: boolean
   shutDown: boolean
+  restart: boolean
 }
 
 interface Streamer {
