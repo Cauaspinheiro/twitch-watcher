@@ -1,9 +1,9 @@
 import cache from '../services/nodeCache'
 import getStreamers from '../apis/twitchApi'
-import openByLevel from './openByLevel'
+import openByLevel from '../useCases/openByLevel'
 import logger from '../services/logger'
 
-interface IStreamersController {
+export interface IStreamersController {
   openStreamers?: string[]
   closedStreamers?: string[]
 }
@@ -21,12 +21,12 @@ export default async function streamersController(ids: string[]) : Promise<IRetu
 
   const liveStreamers = await getStreamers(ids)
 
-  logger.info('[useCases/streamersController]: getting pastController from cache')
+  logger.info('[controllers/streamersController]: getting pastController from cache')
 
   const pastController = cache.get<IStreamersController>('streamersController')
 
   if (pastController) {
-    logger.info(`[useCases/streamersController]: pastController was found in cache - ${JSON.stringify(pastController)}`)
+    logger.info(`[controllers/streamersController]: pastController was found in cache - ${JSON.stringify(pastController)}`)
 
     openStreamers = liveStreamers?.filter((streamer) => {
       if (pastController.openStreamers?.includes(streamer.toLowerCase())) {
@@ -49,22 +49,22 @@ export default async function streamersController(ids: string[]) : Promise<IRetu
       closedStreamers,
     }
 
-    logger.info(`[useCases/streamersController]: new controller: ${JSON.stringify(controller)}`)
-    logger.info('[useCases/streamersController]: setting streamersController with new controller')
+    logger.info(`[controllers/streamersController]: new controller: ${JSON.stringify(controller)}`)
+    logger.info('[controllers/streamersController]: setting streamersController with new controller')
 
     cache.set('streamersController', controller)
 
     return { ...controller, newStreamers }
   }
 
-  logger.info('[useCases/streamersController]: no past controller found')
+  logger.info('[controllers/streamersController]: no past controller found')
 
   await openByLevel(liveStreamers as string[])
 
   const controller : IStreamersController = { closedStreamers: [], openStreamers: liveStreamers }
 
-  logger.info(`[useCases/streamersController]: new controller: ${JSON.stringify(controller)}`)
-  logger.info('[useCases/streamersController]: setting streamersController with new controller')
+  logger.info(`[controllers/streamersController]: new controller: ${JSON.stringify(controller)}`)
+  logger.info('[controllers/streamersController]: setting streamersController with new controller')
 
   cache.set('streamersController', controller)
 

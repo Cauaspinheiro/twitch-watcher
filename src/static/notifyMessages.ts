@@ -30,6 +30,9 @@ const notifyMessages = {
     title: 'Reiniciando Twitch Watcher...',
     message: 'Você ativou a opção para restart o Twitch Watcher no arquivo de configurações',
   },
+  points: {
+    title: 'Atualização dos pontos',
+  },
 }
 
 export default notifyMessages

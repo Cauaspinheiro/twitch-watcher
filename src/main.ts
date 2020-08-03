@@ -1,6 +1,6 @@
 import useConfig from './hooks/useConfig'
 import notify from './services/notifier'
-import streamersController from './useCases/streamersController'
+import streamersController from './controllers/streamersController'
 import shutdown from './useCases/shutdown'
 import logger from './services/logger'
 import notifyMessages from './static/notifyMessages'
