@@ -19,7 +19,7 @@ export default async function shutdown() : Promise<void> {
   if (configPath) {
     logger.info('[/useCases/shutdown]: rewriting config file without config.shutDown')
 
-    fs.writeFileSync(configPath, JSON.stringify(config, undefined, 1))
+    fs.writeFileSync(configPath, JSON.stringify(config, undefined, 2))
   }
 
   logger.info('[/useCases/shutdown]: shutting down pc')
