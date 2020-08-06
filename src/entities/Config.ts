@@ -11,6 +11,7 @@ export interface IConfig {
   shutDown: boolean
   restart: boolean
   getPoints: boolean
+  log_shutDown: boolean
 }
 
 interface TwitchApi {

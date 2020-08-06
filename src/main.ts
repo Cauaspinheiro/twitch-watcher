@@ -25,10 +25,10 @@ export default async function main(firstTime?: boolean) : Promise<unknown> {
     process.exit(0)
   }
 
-  if (config.shutDown) {
+  if (config.shutDown && config.log_shutDown) {
     logger.info('[main]: config.shutDown == true')
 
-    await notify(notifyMessages.deactivate.title, notifyMessages.deactivate.message)
+    await notify(notifyMessages.shutDownOpts.title, notifyMessages.shutDownOpts.message)
   }
 
   const configStreamers : string[] = []
