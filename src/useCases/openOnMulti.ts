@@ -22,6 +22,8 @@ export default async function openOnMulti(newStreamers: string[],
 
     await open(url)
   } else {
+    if (newStreamers.length <= 0) return
+
     let url = 'https://www.multitwitch.tv'
 
     newStreamers.forEach((streamer) => {
