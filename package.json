@@ -36,7 +36,7 @@
     "cross-env": "^7.0.2",
     "faker": "^4.1.0",
     "node-cache": "^5.1.2",
-    "node-notifier": "^7.0.2",
+    "node-notifier": "^8.0.1",
     "node-powershell": "^4.0.0",
     "node-watch": "^0.6.4",
     "open": "^7.1.0",
